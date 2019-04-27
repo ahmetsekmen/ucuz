@@ -172,14 +172,15 @@ class ProductsModel extends ConnectedProductsScopedModel {
       return false;
     });
 
-    _selProductId = null; //seçili bir product kalmadı.
+    // _selProductId = null; //seçili bir product kalmadı.
   }
 
   Future<Null> fetchProducts() {
     _isLoading = true;
     notifyListeners();
     print('fetchProducts çalıştı.');
-    return httpDart.get('https://ucuzapp.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
+    return httpDart.get(
+        'https://ucuzapp.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
         headers: {
           "Accept": "application/json"
         }).then<Null>((httpDart.Response response) {
@@ -246,8 +247,7 @@ class ProductsModel extends ConnectedProductsScopedModel {
 }
 
 class UserModel extends ConnectedProductsScopedModel {
-
-  User get user{
+  User get user {
     return _authenticatedUser;
   }
 
@@ -283,17 +283,15 @@ class UserModel extends ConnectedProductsScopedModel {
       hasError = false;
       message = 'Auth Succeded';
 
-      _authenticatedUser=User(
-        id: responseData['localId'],
-        email: email,
-        token: responseData['idToken'] 
-      );
+      _authenticatedUser = User(
+          id: responseData['localId'],
+          email: email,
+          token: responseData['idToken']);
 
-    final SharedPreferences prefs=await SharedPreferences.getInstance();
-    prefs.setString('token', responseData['idToken']);
-    prefs.setString('userEmail', email);
-    prefs.setString('userId', responseData['localId']);
-
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', responseData['idToken']);
+      prefs.setString('userEmail', email);
+      prefs.setString('userId', responseData['localId']);
     } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
       message = 'Email bulunamadı';
     } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
@@ -309,23 +307,18 @@ class UserModel extends ConnectedProductsScopedModel {
     return {'success': !hasError, 'message': message};
   }
 
-  void AutoAuthenticate() async{
-    final SharedPreferences prefs=await SharedPreferences.getInstance();
+  void AutoAuthenticate() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token');
-    if (token !=null) {
-
-      _authenticatedUser=User(
-        id: prefs.getString('userEmail'),
-        email: prefs.getString('userId'),
-        token: token
-      );
+    if (token != null) {
+      _authenticatedUser = User(
+          id: prefs.getString('userEmail'),
+          email: prefs.getString('userId'),
+          token: token);
 
       notifyListeners();
-
     }
   }
-
-
 }
 
 class UtilityModel extends ConnectedProductsScopedModel {
